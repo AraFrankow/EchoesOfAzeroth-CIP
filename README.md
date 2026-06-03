@@ -33,7 +33,7 @@ Built as a Final Project for [Code in Place 2025](https://codeinplace.stanford.e
    ```
 3. Run the game:
    ```
-   python final_project_cip.py
+   python main.py
    ```
 
 ---

@@ -12,21 +12,21 @@ class Player:
             self.health = 200
             self.max_health = 200
             self.abilities = {
-                "1": ("Mortal Strike", 25), #ataque 1
-                "2": ("Heroic Strike", 40), #ataque 2
-                "3": ("Shield Block", 40),  #chance to block y heal
-                "4": ("Execute", 100),      #solamente se usa cuando tiene 20% de la vida 
-                "5": ("Info", 0)            #Es para mostrar la info de los ataques
+                "1": ("Mortal Strike", 25),    #ataque 1
+                "2": ("Heroic Strike", 40),    #ataque 2
+                "3": ("Shield Block", 40),     #chance to block y heal
+                "4": ("Execute", 100),         #solamente se usa cuando tiene 20% de la vida 
+                "5": ("Info", 0)               #Es para mostrar la info de los ataques
             }
         elif player_class == "Mage":
             self.health = 100
             self.max_health = 100
             self.abilities = {
-                "1": ("Frostbolt", 45),   #ataque 1
-                "2": ("Arcane Blast", 60),#ataque 2
-                "3": ("Ice Barrier", 35), #chance de inmunidad mientras ataca
-                "4": ("Ice Block", 40),   #heal y evasion 100%
-                "5": ("Info", 0)          #Es para mostrar la info de los ataques
+                "1": ("Frostbolt", 45),        #ataque 1
+                "2": ("Arcane Blast", 60),     #ataque 2
+                "3": ("Ice Barrier", 35),      #chance de inmunidad mientras ataca
+                "4": ("Ice Block", 40),        #heal y evasion 100%
+                "5": ("Info", 0)               #Es para mostrar la info de los ataques
             }
         elif player_class == "Rogue":
             self.health = 150
@@ -41,17 +41,25 @@ class Player:
 
     def attack(self, ability_key, enemy):
         ability_name, damage = self.abilities[ability_key]
-        
-        # Rogue tiene chance de crítico en Backstab
+        verificar_vida = (20 * enemy.max_health) / 100
+
+        if self.player_class == "Warrior" and ability_key == "4":
+            if enemy.health <= verificar_vida:
+                print(f"EXECUTE! {ability_name} deals {damage} damage!")
+                enemy.health -= damage
+            else:
+                print(f"Execute can only be used when enemy is below 20% HP!")
+            return
+
         if self.player_class == "Rogue" and ability_key == "2":
-            if random.random() < 0.4:  # 40% de chance
+            if random.random() < 0.4:
                 damage = damage * 2
                 print(f"CRITICAL HIT! {ability_name} deals {damage} damage!")
             else:
                 print(f"{ability_name} deals {damage} damage!")
         else:
             print(f"{ability_name} deals {damage} damage!")
-
+        
         enemy.health -= damage
 
     def heal(self, ability_key):

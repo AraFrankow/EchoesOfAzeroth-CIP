@@ -14,8 +14,8 @@ class Player:
             self.abilities = {
                 "1": ("Mortal Strike", 25),    #ataque 1
                 "2": ("Heroic Strike", 40),    #ataque 2
-                "3": ("Shield Block", 40),     #chance to block y heal
-                "4": ("Execute", 100),         #solamente se usa cuando tiene 20% de la vida 
+                "3": ("Execute", 100),         #solamente se usa cuando tiene 30% de la vida 
+                "4": ("Shield Block", 40 ),    #bloquea el ataque y heal
                 "5": ("Info", 0)               #Es para mostrar la info de los ataques
             }
         elif player_class == "Mage":
@@ -25,7 +25,7 @@ class Player:
                 "1": ("Frostbolt", 45),        #ataque 1
                 "2": ("Arcane Blast", 60),     #ataque 2
                 "3": ("Ice Barrier", 35),      #chance de inmunidad mientras ataca
-                "4": ("Ice Block", 40),        #heal y evasion 100%
+                "4": ("Ice Block", 50),        #heal y evasion 100%
                 "5": ("Info", 0)               #Es para mostrar la info de los ataques
             }
         elif player_class == "Rogue":
@@ -35,20 +35,20 @@ class Player:
                 "1": ("Sinister Strike", 30),  #ataque 1
                 "2": ("Slice and Dice", 45),   #ataque 2 con chance de critico
                 "3": ("Cloak of Shadows", 40), #chance de inmunidad mientras ataca
-                "4": ("Vanish", 40),           #heal y evasion 100%
+                "4": ("Vanish", 30),           #heal y evasion 100%
                 "5": ("Info", 0)               #Es para mostrar la info de los ataques
             }
 
     def attack(self, ability_key, enemy):
         ability_name, damage = self.abilities[ability_key]
-        verificar_vida = (20 * enemy.max_health) / 100
+        verificar_vida = (30 * enemy.max_health) / 100
 
         if self.player_class == "Warrior" and ability_key == "4":
             if enemy.health <= verificar_vida:
                 print(f"EXECUTE! {ability_name} deals {damage} damage!")
                 enemy.health -= damage
             else:
-                print(f"Execute can only be used when enemy is below 20% HP!")
+                print(f"Execute can only be used when enemy is below 30% HP!")
             return
 
         if self.player_class == "Rogue" and ability_key == "2":
@@ -121,21 +121,47 @@ def show_status(player, enemy):
 
 
 def player_turn(player, enemy):
-    print("Choose your action:")
-    for key, (name, value) in player.abilities.items():
-        if key == "3":
-            print(f"{key}. {name} (Heal {value} HP)")
-        else:
-            print(f"{key}. {name} (Damage: {value})")
-    
     while True:
-        choice = input("Enter 1, 2 or 3: ")
-        if choice == "3":
-            return player.heal(choice)
-        elif choice == "1" or choice == "2":
-            return player.attack(choice, enemy)
+        print("\nChoose your action:")
+        for key, (name, value) in player.abilities.items():
+            if key == "3" or key == "4":
+                print(f"{key}. {name}")
+            elif key == "5":
+                print(f"{key}. {name}")
+            else:
+                print(f"{key}. {name} (Damage: {value})")
+
+        choice = input("Enter 1-5: ")
+
+        if choice == "5":
+            print("\n=== ABILITIES INFO ===")
+            if player.player_class == "Warrior":
+                print("1. Mortal Strike   - Deals 25 damage")
+                print("2. Heroic Strike   - Deals 40 damage")
+                print("3. Shield Block    - 50% chance to block + heal 40 HP")
+                print("4. Execute         - Deals 100 damage (only below 30% enemy HP)")
+            elif player.player_class == "Mage":
+                print("1. Frostbolt       - Deals 45 damage")
+                print("2. Arcane Blast    - Deals 60 damage")
+                print("3. Ice Barrier     - 50% chance immune while attacking")
+                print("4. Ice Block       - Heal 50 HP + 100% dodge next attack")
+            elif player.player_class == "Rogue":
+                print("1. Sinister Strike - Deals 30 damage")
+                print("2. Slice and Dice  - Deals 45 damage (40% crit x2)")
+                print("3. Cloak of Shadows- 50% chance immune while attacking")
+                print("4. Vanish          - Heal 30 HP + 70% dodge next attack")
+            print("======================")
+            # no gasta el turno, vuelve a mostrar las opciones
+        elif choice in ["1", "2", "3", "4"]:
+            if choice == "4":
+                player.attack(choice, enemy, player.name)
+            elif choice == "3":
+                player.heal(choice)
+            else:
+                player.attack(choice, enemy, player.name)
+            return  # turno gastado
         else:
-            print("Invalid option. Please enter 1, 2 or 3.")
+            print("Invalid option. Please enter 1-5.")
 
 
 def combat(player, enemy):
